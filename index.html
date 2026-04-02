@@ -153,8 +153,70 @@
     .wl-privacy {
       font-size: 12px; color: #94a3b8; text-align: center; margin-top: 14px;
     }
-    .wl-card iframe {
-      width: 100%; height: 480px; border: none; border-radius: 8px;
+    .wl-field { margin-bottom: 16px; }
+    .wl-field label {
+      display: block; font-size: 13px; font-weight: 600;
+      color: #1a1a2e; margin-bottom: 6px;
+    }
+    .wl-field label .optional {
+      font-weight: 400; color: #94a3b8; font-size: 12px; margin-left: 4px;
+    }
+    .wl-field input, .wl-field textarea {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid #e8e8e8; border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; color: #1a1a2e;
+      background: #fafaf9;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none; resize: vertical;
+    }
+    .wl-field input::placeholder, .wl-field textarea::placeholder { color: #b0bac9; }
+    .wl-field input:focus, .wl-field textarea:focus {
+      border-color: #6c5ce7;
+      box-shadow: 0 0 0 3px rgba(108,92,231,0.1);
+      background: #fff;
+    }
+    .wl-submit {
+      width: 100%; padding: 14px;
+      background: #6c5ce7; color: #fff;
+      border: none; border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px; font-weight: 700;
+      cursor: pointer; margin-top: 8px;
+      box-shadow: 0 4px 20px rgba(108,92,231,0.3);
+      transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .wl-submit:hover { background: #5a4bd1; transform: translateY(-1px); box-shadow: 0 6px 28px rgba(108,92,231,0.38); }
+    .wl-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    .wl-privacy { font-size: 12px; color: #94a3b8; text-align: center; margin-top: 14px; }
+    /* Success state */
+    .wl-success {
+      display: none; text-align: center; padding: 16px 0 8px;
+    }
+    .wl-success-icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: #f0ecff; margin: 0 auto 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+    }
+    .wl-success h3 {
+      font-size: 22px; font-weight: 700; color: #1a1a2e;
+      margin-bottom: 10px; letter-spacing: -0.3px;
+    }
+    .wl-success p { font-size: 14px; color: #64748b; line-height: 1.6; }
+    .wl-success-close {
+      margin-top: 24px; padding: 12px 32px;
+      background: #6c5ce7; color: #fff;
+      border: none; border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .wl-success-close:hover { background: #5a4bd1; }
+    .wl-error {
+      font-size: 13px; color: #ef4444; margin-top: 10px;
+      text-align: center; display: none;
     }
 
     /* ===== HERO ===== */
@@ -1081,10 +1143,41 @@
     <div class="wl-card" role="dialog" aria-modal="true" aria-labelledby="wlTitle">
       <button class="wl-close" onclick="closeWaitlist()" aria-label="Close">✕</button>
 
-      <div class="wl-badge"><span class="wl-badge-dot"></span>Early Access</div>
-      <h2 id="wlTitle">Get <span class="accent">early access</span><br>to Signal IQ</h2>
-      <p>Be the first to know when we launch. No spam — just your spot in line.</p>
-      <iframe src="https://forms.office.com/r/YeRBFAUGXR?embed=true" allowfullscreen></iframe>
+      <!-- Form view -->
+      <div id="wlForm">
+        <div class="wl-badge"><span class="wl-badge-dot"></span>Early Access</div>
+        <h2 id="wlTitle">Get <span class="accent">early access</span><br>to Signal IQ</h2>
+        <p>Be the first to know when we launch. No spam — just your spot in line.</p>
+
+        <form id="waitlistForm" onsubmit="submitWaitlist(event)">
+          <div class="wl-field">
+            <label for="wlName">Your Name</label>
+            <input type="text" id="wlName" placeholder="Alex Johnson" required autocomplete="name" />
+          </div>
+          <div class="wl-field">
+            <label for="wlEmail">Work Email</label>
+            <input type="email" id="wlEmail" placeholder="alex@company.com" required autocomplete="email" />
+          </div>
+          <div class="wl-field">
+            <label for="wlFeedback">Feedback / Suggestion <span class="optional">(optional)</span></label>
+            <textarea id="wlFeedback" rows="3" placeholder="What would you love to see in Signal IQ?"></textarea>
+          </div>
+
+          <button type="submit" class="wl-submit" id="wlSubmitBtn">
+            <span id="wlBtnText">Reserve My Spot</span>
+          </button>
+          <div class="wl-error" id="wlError">Something went wrong. Please try again.</div>
+        </form>
+        <p class="wl-privacy">Your info is private. No spam, ever.</p>
+      </div>
+
+      <!-- Success view -->
+      <div class="wl-success" id="wlSuccess">
+        <div class="wl-success-icon">&#127881;</div>
+        <h3>You're on the list!</h3>
+        <p>Thanks for signing up. We'll reach out as soon as early access opens. Keep an eye on your inbox.</p>
+        <button class="wl-success-close" onclick="closeWaitlist()">Done</button>
+      </div>
     </div>
   </div>
 
@@ -1095,6 +1188,11 @@
     document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
     // ===== WAITLIST MODAL =====
+    const FORMS_API = 'https://forms.office.com/formapi/api/7123dabd-0e87-4da9-9cb9-b7ec82011aad/users/6466e001-c16d-4f27-8e4d-f5d9e03451ef/forms(%27vdojcYcOqU2cubfsggEarQHgZmRtwSdPjk312eA0Ue9UNFFNWUVXVzBSRzNJVlJPOUVKNEc5WVIwMS4u%27)/responses';
+    const Q_NAME = 'r61f15e1942fe4af4a0766b107ae954d4';
+    const Q_EMAIL = 'r703f2468078f4cb49bb49940230a33e5';
+    const Q_FEEDBACK = 'raba82d6a8b304539a59498bd19d7e8ec';
+
     function openWaitlist() {
       document.getElementById('wlOverlay').classList.add('open');
       document.body.style.overflow = 'hidden';
@@ -1102,6 +1200,14 @@
     function closeWaitlist() {
       document.getElementById('wlOverlay').classList.remove('open');
       document.body.style.overflow = '';
+      setTimeout(() => {
+        document.getElementById('wlForm').style.display = '';
+        document.getElementById('wlSuccess').style.display = 'none';
+        document.getElementById('waitlistForm').reset();
+        document.getElementById('wlBtnText').textContent = 'Reserve My Spot';
+        document.getElementById('wlSubmitBtn').disabled = false;
+        document.getElementById('wlError').style.display = 'none';
+      }, 300);
     }
     function handleOverlayClick(e) {
       if (e.target === document.getElementById('wlOverlay')) closeWaitlist();
@@ -1109,6 +1215,44 @@
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') closeWaitlist();
     });
+
+    async function submitWaitlist(e) {
+      e.preventDefault();
+      const btn = document.getElementById('wlSubmitBtn');
+      const btnText = document.getElementById('wlBtnText');
+      const errorEl = document.getElementById('wlError');
+
+      btn.disabled = true;
+      btnText.textContent = 'Submitting\u2026';
+      errorEl.style.display = 'none';
+
+      const now = new Date().toISOString();
+      const payload = {
+        startDate: now,
+        submitDate: now,
+        answers: JSON.stringify([
+          { questionId: Q_NAME, answer1: document.getElementById('wlName').value.trim() },
+          { questionId: Q_EMAIL, answer1: document.getElementById('wlEmail').value.trim() },
+          { questionId: Q_FEEDBACK, answer1: document.getElementById('wlFeedback').value.trim() }
+        ])
+      };
+
+      try {
+        await fetch(FORMS_API, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        // no-cors means we can't read the response, but the data is sent
+        document.getElementById('wlForm').style.display = 'none';
+        document.getElementById('wlSuccess').style.display = 'block';
+      } catch (err) {
+        btn.disabled = false;
+        btnText.textContent = 'Reserve My Spot';
+        errorEl.style.display = 'block';
+      }
+    }
   </script>
 
 </body>
