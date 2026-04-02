@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signal IQ — Cut Through the Noise</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,400;1,500;1,600;1,700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', -apple-system, sans-serif;
+      color: #1a1a2e;
+      background: #fafaf9;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* Brand font */
+    .brand-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-style: italic;
+      font-weight: 600;
+    }
+
+    /* ===== NAV ===== */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0 48px;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(250, 250, 249, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    .nav-logo {
+      font-size: 22px; color: #1a1a2e;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-logo .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #6c5ce7;
+    }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a { font-size: 14px; color: #64748b; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: #1a1a2e; }
+    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .btn-text { font-size: 14px; font-weight: 500; color: #64748b; background: none; border: none; cursor: pointer; }
+    .btn-text:hover { color: #1a1a2e; }
+    .btn-fill {
+      font-size: 13px; font-weight: 600; padding: 9px 22px;
+      border-radius: 8px; border: none; cursor: pointer;
+      background: #1a1a2e; color: #fff;
+      transition: all 0.2s;
+    }
+    .btn-fill:hover { background: #2d2d4e; transform: translateY(-1px); }
+
+    /* ===== HERO ===== */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 140px 24px 100px;
+      position: relative;
+      background: #fafaf9;
+      overflow: hidden;
+    }
+    /* Subtle gradient orb */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -20%; left: 50%; transform: translateX(-50%);
+      width: 900px; height: 900px;
+      background: radial-gradient(circle, rgba(108,92,231,0.06) 0%, rgba(108,92,231,0.02) 40%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px 6px 8px;
+      border-radius: 100px;
+      background: #fff;
+      border: 1px solid #e8e8e8;
+      font-size: 13px; color: #64748b; font-weight: 500;
+      margin-bottom: 40px;
+      position: relative;
+      animation: fadeUp 0.6s ease-out 0.1s both;
+    }
+    .hero-pill .pill-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #6c5ce7;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .hero h1 {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(42px, 6vw, 76px);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -2.5px;
+      color: #1a1a2e;
+      max-width: 780px;
+      position: relative;
+      animation: fadeUp 0.6s ease-out 0.25s both;
+    }
+    .hero h1 .accent {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-style: italic;
+      font-weight: 500;
+      color: #6c5ce7;
+    }
+    .hero-sub {
+      font-size: clamp(16px, 1.8vw, 19px);
+      line-height: 1.65;
+      color: #64748b;
+      max-width: 520px;
+      margin: 28px auto 44px;
+      position: relative;
+      animation: fadeUp 0.6s ease-out 0.4s both;
+    }
+    .hero-actions {
+      display: flex; gap: 12px;
+      position: relative;
+      animation: fadeUp 0.6s ease-out 0.55s both;
+    }
+    .btn-hero {
+      font-size: 15px; font-weight: 600; padding: 14px 32px;
+      border-radius: 10px; border: none; cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-hero.primary {
+      background: #6c5ce7; color: #fff;
+      box-shadow: 0 4px 24px rgba(108,92,231,0.25);
+    }
+    .btn-hero.primary:hover {
+      background: #5a4bd1;
+      box-shadow: 0 8px 32px rgba(108,92,231,0.35);
+      transform: translateY(-2px);
+    }
+    .btn-hero.secondary {
+      background: #fff; color: #1a1a2e;
+      border: 1px solid #e0e0e0;
+    }
+    .btn-hero.secondary:hover {
+      border-color: #c8c8c8;
+      background: #f8f8f8;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== HERO MOCK ===== */
+    .hero-mock-wrapper {
+      margin-top: 72px;
+      max-width: 960px;
+      width: 100%;
+      position: relative;
+      animation: fadeUp 0.8s ease-out 0.7s both;
+    }
+    .hero-mock {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid #e8e8e8;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
+      overflow: hidden;
+    }
+    .mock-bar {
+      display: flex; align-items: center; gap: 6px;
+      padding: 14px 20px;
+      background: #fafaf9;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .mock-bar-dot { width: 10px; height: 10px; border-radius: 50%; background: #e0e0e0; }
+    .mock-body { padding: 28px; }
+    .mock-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .mock-stat-card {
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid #f0f0f0;
+      background: #fafaf9;
+    }
+    .mock-stat-card .label { font-size: 12px; color: #94a3b8; font-weight: 500; margin-bottom: 8px; }
+    .mock-stat-card .value { font-size: 28px; font-weight: 700; color: #1a1a2e; letter-spacing: -1px; }
+    .mock-stat-card .change { font-size: 12px; font-weight: 600; margin-top: 4px; }
+    .mock-stat-card .change.up { color: #10b981; }
+    .mock-row { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; }
+    .mock-feed {
+      border: 1px solid #f0f0f0;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .mock-feed-header {
+      padding: 14px 18px;
+      font-size: 13px; font-weight: 600; color: #1a1a2e;
+      border-bottom: 1px solid #f0f0f0;
+      background: #fafaf9;
+    }
+    .feed-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 12px 18px;
+      border-bottom: 1px solid #f8f8f8;
+    }
+    .feed-dot { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; }
+    .feed-dot.sf { background: #0176d3; }
+    .feed-dot.ic { background: #6c5ce7; }
+    .feed-dot.zd { background: #03363d; }
+    .feed-content { flex: 1; }
+    .feed-source { font-size: 11px; color: #94a3b8; font-weight: 500; }
+    .feed-msg { font-size: 12px; color: #475569; margin-top: 2px; line-height: 1.45; }
+    .feed-tag { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: #f0ecff; color: #6c5ce7; white-space: nowrap; margin-top: 4px; display: inline-block; }
+    .mock-ai-box {
+      border: 1px solid #f0f0f0;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .mock-ai-header {
+      padding: 14px 18px;
+      font-size: 13px; font-weight: 600; color: #6c5ce7;
+      border-bottom: 1px solid #f0f0f0;
+      background: #fafaf9;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .mock-ai-body { padding: 18px; }
+    .mock-ai-body p { font-size: 13px; color: #64748b; line-height: 1.6; }
+    .mock-theme-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f8f8f8;
+    }
+    .mock-theme-row:last-child { border: none; }
+    .theme-name { display: flex; align-items: center; gap: 8px; }
+    .theme-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .theme-label { font-size: 12px; font-weight: 600; color: #1a1a2e; }
+    .theme-meta { font-size: 11px; color: #94a3b8; }
+    .theme-pct { font-size: 11px; font-weight: 600; }
+
+    /* ===== LOGOS ===== */
+    .logos {
+      padding: 64px 24px;
+      text-align: center;
+      background: #fafaf9;
+      border-top: 1px solid #f0f0f0;
+    }
+    .logos p {
+      font-size: 12px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 2px; color: #c0c0c0; margin-bottom: 28px;
+    }
+    .logos-row {
+      display: flex; align-items: center; justify-content: center;
+      gap: 56px; flex-wrap: wrap;
+    }
+    .logos-row span { font-size: 20px; font-weight: 700; color: #d4d4d4; letter-spacing: -0.5px; }
+
+    /* ===== PROBLEM SECTION ===== */
+    .problem {
+      padding: 120px 24px;
+      background: #fff;
+      text-align: center;
+    }
+    .problem-label {
+      font-size: 12px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 1.5px; color: #6c5ce7; margin-bottom: 20px;
+    }
+    .problem h2 {
+      font-size: clamp(28px, 3.5vw, 44px);
+      font-weight: 700; letter-spacing: -1px;
+      color: #1a1a2e; max-width: 640px; margin: 0 auto 20px;
+      line-height: 1.15;
+    }
+    .problem h2 .accent {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      color: #6c5ce7; font-weight: 500;
+    }
+    .problem > p {
+      font-size: 17px; color: #64748b; max-width: 520px;
+      margin: 0 auto; line-height: 1.65;
+    }
+
+    /* ===== HOW IT WORKS (3 steps) ===== */
+    .steps {
+      padding: 0 24px 120px;
+      background: #fff;
+    }
+    .steps-grid {
+      max-width: 1100px; margin: 48px auto 0;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+    .step {
+      padding: 40px 32px;
+      border-radius: 16px;
+      border: 1px solid #f0f0f0;
+      background: #fafaf9;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .step:hover {
+      border-color: #e0dcff;
+      box-shadow: 0 12px 40px rgba(108,92,231,0.06);
+      transform: translateY(-4px);
+    }
+    .step-num {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 48px; font-weight: 700;
+      color: #f0ecff;
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+    .step h3 { font-size: 20px; font-weight: 700; color: #1a1a2e; margin-bottom: 12px; letter-spacing: -0.3px; }
+    .step p { font-size: 14px; color: #64748b; line-height: 1.65; }
+    .step-visual {
+      margin-top: 28px;
+      padding: 16px;
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid #f0f0f0;
+    }
+    .chip { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; margin: 2px; }
+    .chip.v { background: #f0ecff; color: #6c5ce7; }
+    .chip.b { background: #dbeafe; color: #2563eb; }
+    .chip.g { background: #dcfce7; color: #16a34a; }
+    .chip.a { background: #fef3c7; color: #d97706; }
+    .chip.r { background: #ffe4e6; color: #e11d48; }
+    .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .bar-track { flex: 1; height: 5px; background: #f0f0f0; border-radius: 3px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #6c5ce7, #a78bfa); }
+    .bar-label { font-size: 10px; color: #94a3b8; width: 70px; }
+    .mini-stat-row { display: flex; gap: 6px; }
+    .mini-stat { flex: 1; text-align: center; padding: 8px; background: #fafaf9; border-radius: 8px; border: 1px solid #f0f0f0; }
+    .mini-stat .num { font-size: 18px; font-weight: 700; color: #1a1a2e; }
+    .mini-stat .lbl { font-size: 9px; color: #94a3b8; font-weight: 500; }
+
+    /* ===== FEATURE SECTIONS ===== */
+    .feature {
+      padding: 120px 24px;
+    }
+    .feature.alt { background: #fff; }
+    .feature.base { background: #fafaf9; }
+    .feature-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 80px; align-items: center;
+    }
+    .feature-inner.flip { direction: rtl; }
+    .feature-inner.flip > * { direction: ltr; }
+    .feature-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 6px;
+      font-size: 12px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.8px; margin-bottom: 16px;
+      background: #f0ecff; color: #6c5ce7;
+    }
+    .feature h2 {
+      font-size: clamp(26px, 3vw, 38px);
+      font-weight: 700; letter-spacing: -0.8px;
+      color: #1a1a2e; line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .feature h2 .accent {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      color: #6c5ce7; font-weight: 500;
+    }
+    .feature p.desc {
+      font-size: 15px; color: #64748b; line-height: 1.7; margin-bottom: 28px;
+    }
+    .btn-link {
+      font-size: 14px; font-weight: 600; color: #6c5ce7;
+      background: none; border: none; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: gap 0.2s;
+    }
+    .btn-link:hover { gap: 10px; }
+
+    /* Feature mocks */
+    .f-mock {
+      border-radius: 16px;
+      border: 1px solid #e8e8e8;
+      background: #fff;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.04);
+      overflow: hidden;
+    }
+    .f-mock-bar {
+      padding: 12px 18px;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .f-mock-body { padding: 24px; }
+    .sig-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f8f8f8;
+    }
+    .sig-row:last-child { border: none; }
+    .sig-avatar {
+      width: 30px; height: 30px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .sig-avatar.a { background: #0176d3; }
+    .sig-avatar.b { background: #6c5ce7; }
+    .sig-avatar.c { background: #10b981; }
+    .sig-avatar.d { background: #f59e0b; }
+    .sig-body { flex: 1; }
+    .sig-meta { font-size: 11px; color: #94a3b8; }
+    .sig-text { font-size: 13px; color: #475569; margin-top: 2px; line-height: 1.5; }
+    .sig-tag { display: inline-block; margin-top: 4px; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: #f0ecff; color: #6c5ce7; }
+    .theme-card {
+      padding: 14px 16px;
+      background: #fafaf9;
+      border-radius: 10px;
+      border: 1px solid #f0f0f0;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .theme-card:last-child { margin-bottom: 0; }
+    .tc-left { display: flex; align-items: center; gap: 10px; }
+    .tc-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .tc-name { font-size: 14px; font-weight: 600; color: #1a1a2e; }
+    .tc-right { display: flex; align-items: center; gap: 14px; }
+    .tc-count { font-size: 12px; color: #94a3b8; }
+    .tc-pct { font-size: 12px; font-weight: 600; }
+    .tc-pct.red { color: #ef4444; }
+    .tc-pct.amber { color: #f59e0b; }
+    .tc-pct.green { color: #10b981; }
+    .ai-box {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 10px;
+      border: 1px solid #e0dcff;
+      background: #faf9ff;
+    }
+    .ai-box .ai-label {
+      font-size: 11px; font-weight: 700; color: #6c5ce7;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .ai-box p { font-size: 13px; color: #64748b; line-height: 1.6; }
+    .prio-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #f0f0f0;
+      margin-bottom: 10px;
+    }
+    .prio-item:last-child { margin-bottom: 0; }
+    .prio-badge {
+      width: 28px; height: 28px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: #fff;
+    }
+    .prio-badge.p0 { background: #10b981; }
+    .prio-badge.p1 { background: #f59e0b; }
+    .prio-badge.p2 { background: #6c5ce7; }
+    .prio-body { flex: 1; }
+    .prio-name { font-size: 13px; font-weight: 600; color: #1a1a2e; }
+    .prio-meta { font-size: 11px; color: #94a3b8; }
+    .prio-score { font-size: 12px; font-weight: 700; }
+    .prio-score.hi { color: #10b981; }
+    .prio-score.mid { color: #f59e0b; }
+    .prio-score.lo { color: #6c5ce7; }
+
+    /* ===== INTEGRATIONS ===== */
+    .integrations {
+      padding: 120px 24px;
+      background: #1a1a2e;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .integrations::before {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(108,92,231,0.12) 0%, transparent 60%);
+    }
+    .integrations h2 {
+      font-size: clamp(28px, 3.5vw, 44px);
+      font-weight: 700; color: #fff; letter-spacing: -1px;
+      margin-bottom: 12px; position: relative;
+    }
+    .integrations > p {
+      font-size: 16px; color: #94a3b8; max-width: 460px;
+      margin: 0 auto 52px; line-height: 1.6;
+      position: relative;
+    }
+    .int-grid {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 12px; max-width: 720px; margin: 0 auto;
+      position: relative;
+    }
+    .int-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      font-size: 13px; font-weight: 500; color: #e2e8f0;
+      transition: all 0.25s;
+    }
+    .int-pill:hover {
+      background: rgba(108,92,231,0.1);
+      border-color: rgba(108,92,231,0.3);
+      transform: translateY(-2px);
+    }
+    .int-dot {
+      width: 20px; height: 20px; border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 700; color: #fff;
+    }
+
+    /* ===== STATS ===== */
+    .stats {
+      padding: 100px 24px;
+      background: #fafaf9;
+      text-align: center;
+    }
+    .stats h2 {
+      font-size: clamp(26px, 3vw, 40px);
+      font-weight: 700; color: #1a1a2e; letter-spacing: -1px;
+      margin-bottom: 48px;
+    }
+    .stats h2 .accent {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      color: #6c5ce7; font-weight: 500;
+    }
+    .stats-grid {
+      max-width: 800px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+    }
+    .stat-item .stat-number {
+      font-size: clamp(40px, 5vw, 60px);
+      font-weight: 700; letter-spacing: -2px;
+      color: #6c5ce7;
+    }
+    .stat-item .stat-text {
+      font-size: 14px; color: #64748b; margin-top: 4px;
+    }
+
+    /* ===== CTA ===== */
+    .cta {
+      padding: 120px 24px;
+      background: #fff;
+      text-align: center;
+      position: relative;
+    }
+    .cta::before {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 50%;
+      background: linear-gradient(180deg, transparent, rgba(108,92,231,0.03));
+    }
+    .cta h2 {
+      font-size: clamp(30px, 4vw, 52px);
+      font-weight: 700; letter-spacing: -1.5px;
+      color: #1a1a2e; margin-bottom: 16px;
+      position: relative;
+    }
+    .cta h2 .accent {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      color: #6c5ce7; font-weight: 500;
+    }
+    .cta > p {
+      font-size: 17px; color: #64748b; max-width: 420px;
+      margin: 0 auto 40px; line-height: 1.6;
+      position: relative;
+    }
+    .cta .btn-hero { position: relative; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: #1a1a2e;
+      padding: 72px 24px 36px;
+    }
+    .footer-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+    }
+    .footer-brand .f-logo {
+      font-size: 20px; color: #fff;
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 12px;
+    }
+    .footer-brand .f-logo .dot { width: 7px; height: 7px; border-radius: 50%; background: #6c5ce7; }
+    .footer-brand p { font-size: 13px; color: #64748b; line-height: 1.6; max-width: 260px; }
+    .f-col h5 {
+      font-size: 12px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 1px; color: #94a3b8; margin-bottom: 16px;
+    }
+    .f-col a { display: block; font-size: 13px; color: #64748b; padding: 5px 0; transition: color 0.2s; }
+    .f-col a:hover { color: #fff; }
+    .footer-bottom {
+      max-width: 1100px; margin: 40px auto 0;
+      padding-top: 28px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-bottom span { font-size: 12px; color: #475569; }
+    .badges { display: flex; gap: 8px; }
+    .badge-pill {
+      padding: 4px 12px; border-radius: 6px;
+      font-size: 10px; font-weight: 700;
+      background: rgba(108,92,231,0.1);
+      border: 1px solid rgba(108,92,231,0.15);
+      color: #a78bfa;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1024px) {
+      .steps-grid { grid-template-columns: 1fr; max-width: 440px; }
+      .feature-inner { grid-template-columns: 1fr; gap: 48px; }
+      .feature-inner.flip { direction: ltr; }
+      .mock-stats { grid-template-columns: repeat(2, 1fr); }
+      .mock-row { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr; gap: 28px; }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .footer-inner { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; gap: 12px; }
+      .hero-actions { flex-direction: column; align-items: center; }
+    }
+
+    /* Scroll reveal */
+    .reveal {
+      opacity: 0; transform: translateY(32px);
+      transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <span class="dot"></span>
+      <span class="brand-name">Signal IQ</span>
+    </a>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#integrations">Integrations</a>
+      <a href="#pricing">Pricing</a>
+    </div>
+    <div class="nav-right">
+      <button class="btn-text">Log in</button>
+      <button class="btn-fill">Book a demo</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-pill">
+      <span class="pill-dot"></span>
+      #ProductJam2026 &mdash; Now in Public Beta
+    </div>
+
+    <h1>Cut through the <span class="accent">noise</span>,<br>build what matters</h1>
+
+    <p class="hero-sub">
+      Customer feedback is everywhere. Signal IQ pulls it all together and shows you what <em>actually</em> matters &mdash; tied to real revenue, not just loud requests.
+    </p>
+
+    <div class="hero-actions">
+      <button class="btn-hero primary">Book a demo</button>
+      <button class="btn-hero secondary">See how it works</button>
+    </div>
+
+    <!-- HERO MOCK UI -->
+    <div class="hero-mock-wrapper">
+      <div class="hero-mock">
+        <div class="mock-bar">
+          <div class="mock-bar-dot"></div>
+          <div class="mock-bar-dot"></div>
+          <div class="mock-bar-dot"></div>
+        </div>
+        <div class="mock-body">
+          <div class="mock-stats">
+            <div class="mock-stat-card">
+              <div class="label">Signals this week</div>
+              <div class="value">347</div>
+              <div class="change up">+12% vs last week</div>
+            </div>
+            <div class="mock-stat-card">
+              <div class="label">Top pain theme</div>
+              <div class="value" style="font-size:16px; margin-top:6px;">Export Perf.</div>
+              <div class="change up" style="color:#ef4444;">127 mentions</div>
+            </div>
+            <div class="mock-stat-card">
+              <div class="label">Avg sentiment</div>
+              <div class="value">4.2<span style="font-size:16px; color:#94a3b8;">/5</span></div>
+              <div class="change up">+0.3 improvement</div>
+            </div>
+            <div class="mock-stat-card">
+              <div class="label">Feature ideas</div>
+              <div class="value">23</div>
+              <div class="change up">5 new this week</div>
+            </div>
+          </div>
+          <div class="mock-row">
+            <div class="mock-feed">
+              <div class="mock-feed-header">Recent Signals</div>
+              <div class="feed-item">
+                <div class="feed-dot sf">SF</div>
+                <div class="feed-content">
+                  <div class="feed-source">Salesforce &middot; Enterprise</div>
+                  <div class="feed-msg">Export to CSV is painfully slow for large datasets.</div>
+                  <span class="feed-tag">Export Pain</span>
+                </div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-dot ic">IC</div>
+                <div class="feed-content">
+                  <div class="feed-source">Intercom &middot; Chat</div>
+                  <div class="feed-msg">Can we get automated weekly digest reports?</div>
+                  <span class="feed-tag">Automation</span>
+                </div>
+              </div>
+              <div class="feed-item" style="border:none;">
+                <div class="feed-dot zd">ZD</div>
+                <div class="feed-content">
+                  <div class="feed-source">Zendesk &middot; Ticket</div>
+                  <div class="feed-msg">We need RBAC for the governance module.</div>
+                  <span class="feed-tag">Governance</span>
+                </div>
+              </div>
+            </div>
+            <div class="mock-ai-box">
+              <div class="mock-ai-header">&#x2728; AI Weekly Summary</div>
+              <div class="mock-ai-body">
+                <div class="mock-theme-row">
+                  <div class="theme-name"><div class="theme-dot" style="background:#ef4444;"></div><div class="theme-label">Export Perf.</div></div>
+                  <div style="display:flex;gap:10px;align-items:center;"><div class="theme-meta">127</div><div class="theme-pct" style="color:#ef4444;">+34%</div></div>
+                </div>
+                <div class="mock-theme-row">
+                  <div class="theme-name"><div class="theme-dot" style="background:#f59e0b;"></div><div class="theme-label">Governance</div></div>
+                  <div style="display:flex;gap:10px;align-items:center;"><div class="theme-meta">89</div><div class="theme-pct" style="color:#f59e0b;">+21%</div></div>
+                </div>
+                <div class="mock-theme-row">
+                  <div class="theme-name"><div class="theme-dot" style="background:#6c5ce7;"></div><div class="theme-label">Automation</div></div>
+                  <div style="display:flex;gap:10px;align-items:center;"><div class="theme-meta">63</div><div class="theme-pct" style="color:#10b981;">+12%</div></div>
+                </div>
+                <p style="font-size:12px; color:#94a3b8; margin-top:14px; line-height:1.55;">Enterprise pain around export performance spiked this week. 3 at-risk deals cite it as a blocker.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGOS -->
+  <div class="logos reveal">
+    <p>Trusted by product teams at</p>
+    <div class="logos-row">
+      <span>Acme</span><span>TechFlow</span><span>ScaleUp</span><span>DataVault</span><span>CloudFirst</span><span>NexGen</span>
+    </div>
+  </div>
+
+  <!-- PROBLEM -->
+  <section class="problem reveal" id="how">
+    <div class="problem-label">The problem</div>
+    <h2>Feedback is <span class="accent">everywhere</span>.<br>Clarity is nowhere.</h2>
+    <p>Support tickets, sales calls, Slack threads, app reviews &mdash; everyone has opinions, everything feels urgent. Signal IQ turns scattered inputs into confident decisions.</p>
+  </section>
+
+  <!-- 3 STEPS -->
+  <section class="steps">
+    <div class="steps-grid">
+
+      <div class="step reveal">
+        <div class="step-num">01</div>
+        <h3>Collect</h3>
+        <p>Ingest feedback from Teams Calls, Salesforce, Intercom, Zendesk, email, app reviews, and in-app widgets &mdash; all into one funnel.</p>
+        <div class="step-visual">
+          <div style="display:flex; flex-wrap:wrap; gap:4px; margin-bottom:12px;">
+            <span class="chip b">Salesforce</span>
+            <span class="chip v">Intercom</span>
+            <span class="chip g">Zendesk</span>
+            <span class="chip a">Email</span>
+            <span class="chip r">Reviews</span>
+            <span class="chip b">Teams</span>
+          </div>
+          <div style="text-align:center; color:#c8c8c8; font-size:18px; margin:4px 0;">&#x2193;</div>
+          <div style="text-align:center; padding:6px; background:#f0ecff; border-radius:6px;">
+            <span style="font-size:11px; font-weight:700; color:#6c5ce7;">Unified Feed</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step reveal" style="transition-delay:0.1s;">
+        <div class="step-num">02</div>
+        <h3>Understand</h3>
+        <p>AI classifies, deduplicates, and scores every piece of feedback &mdash; so you see themes, not noise.</p>
+        <div class="step-visual">
+          <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <span style="font-size:11px; font-weight:600; color:#6c5ce7;">AI Classification</span>
+            <span style="font-size:10px; color:#c8c8c8;">97% accuracy</span>
+          </div>
+          <div class="bar-row"><div class="bar-track"><div class="bar-fill" style="width:78%;"></div></div><div class="bar-label">Export Pain</div></div>
+          <div class="bar-row"><div class="bar-track"><div class="bar-fill" style="width:62%;"></div></div><div class="bar-label">Governance</div></div>
+          <div class="bar-row"><div class="bar-track"><div class="bar-fill" style="width:45%;"></div></div><div class="bar-label">Automation</div></div>
+        </div>
+      </div>
+
+      <div class="step reveal" style="transition-delay:0.2s;">
+        <div class="step-num">03</div>
+        <h3>Explore</h3>
+        <p>Interactive dashboards for trends, sentiment, and top requests. Ask in natural language, get instant answers.</p>
+        <div class="step-visual">
+          <div style="padding:7px 10px; background:#fafaf9; border:1px solid #f0f0f0; border-radius:6px; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+            <span style="font-size:11px; color:#c8c8c8;">&#x1F50D;</span>
+            <span style="font-size:11px; color:#c8c8c8;">Top pain this quarter?</span>
+          </div>
+          <div class="mini-stat-row">
+            <div class="mini-stat"><div class="num">347</div><div class="lbl">Signals</div></div>
+            <div class="mini-stat"><div class="num">4.2</div><div class="lbl">Sentiment</div></div>
+            <div class="mini-stat"><div class="num">12</div><div class="lbl">Themes</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FEATURE 1: Signal Feed -->
+  <section class="feature base" id="features">
+    <div class="feature-inner reveal">
+      <div>
+        <div class="feature-tag">Signal Feed</div>
+        <h2>One <span class="accent">clear view</span> of<br>what customers are saying</h2>
+        <p class="desc">Watch feedback flow in real-time from every channel. AI tags, deduplicates, and scores each signal so your team sees what matters &mdash; backed by actual customer evidence, not black-box AI.</p>
+        <button class="btn-link">Explore Signal Feed &rarr;</button>
+      </div>
+      <div class="f-mock">
+        <div class="f-mock-bar"><div class="mock-bar-dot"></div><div class="mock-bar-dot"></div><div class="mock-bar-dot"></div></div>
+        <div class="f-mock-body">
+          <div class="sig-row">
+            <div class="sig-avatar a">SF</div>
+            <div class="sig-body"><div class="sig-meta">Salesforce &middot; Enterprise Deal</div><div class="sig-text">Export to CSV is painfully slow for large datasets. Dealbreaker for ops.</div><span class="sig-tag">Export Pain</span></div>
+          </div>
+          <div class="sig-row">
+            <div class="sig-avatar b">IC</div>
+            <div class="sig-body"><div class="sig-meta">Intercom &middot; In-app Chat</div><div class="sig-text">Can we get automated weekly digest reports sent to Slack?</div><span class="sig-tag">Automation</span></div>
+          </div>
+          <div class="sig-row">
+            <div class="sig-avatar c">ZD</div>
+            <div class="sig-body"><div class="sig-meta">Zendesk &middot; Support Ticket</div><div class="sig-text">We need role-based access controls for governance.</div><span class="sig-tag">Governance</span></div>
+          </div>
+          <div class="sig-row">
+            <div class="sig-avatar d">EM</div>
+            <div class="sig-body"><div class="sig-meta">Email &middot; Customer Success</div><div class="sig-text">Love the new dashboard! But we'd kill for a mobile app.</div><span class="sig-tag">Mobile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURE 2: AI Themes -->
+  <section class="feature alt">
+    <div class="feature-inner flip reveal">
+      <div>
+        <div class="feature-tag" style="background:#dcfce7; color:#16a34a;">AI Themes</div>
+        <h2>Priorities tied to<br><span class="accent">real revenue</span>, not volume</h2>
+        <p class="desc">Stop manually tagging. Signal IQ clusters signals into themes, tracks them over time, and alerts you when something spikes &mdash; so you catch pain before it becomes churn.</p>
+        <button class="btn-link">Learn more &rarr;</button>
+      </div>
+      <div class="f-mock">
+        <div class="f-mock-bar"><div class="mock-bar-dot"></div><div class="mock-bar-dot"></div><div class="mock-bar-dot"></div></div>
+        <div class="f-mock-body">
+          <div class="theme-card"><div class="tc-left"><div class="tc-dot" style="background:#ef4444;"></div><span class="tc-name">Export Performance</span></div><div class="tc-right"><span class="tc-count">127 signals</span><span class="tc-pct red">+34%</span></div></div>
+          <div class="theme-card"><div class="tc-left"><div class="tc-dot" style="background:#f59e0b;"></div><span class="tc-name">Governance & RBAC</span></div><div class="tc-right"><span class="tc-count">89 signals</span><span class="tc-pct amber">+21%</span></div></div>
+          <div class="theme-card"><div class="tc-left"><div class="tc-dot" style="background:#6c5ce7;"></div><span class="tc-name">Digest Automation</span></div><div class="tc-right"><span class="tc-count">63 signals</span><span class="tc-pct green">+12%</span></div></div>
+          <div class="ai-box">
+            <div class="ai-label">&#x2728; AI Insight</div>
+            <p>Export pain is accelerating in enterprise accounts. 3 at-risk deals ($2.4M ARR) cite it as a blocker. Recommend prioritizing in next sprint.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURE 3: Prioritize -->
+  <section class="feature base">
+    <div class="feature-inner reveal">
+      <div>
+        <div class="feature-tag" style="background:#fef3c7; color:#d97706;">Prioritize</div>
+        <h2>Your roadmap deserves<br>more than <span class="accent">gut instinct</span></h2>
+        <p class="desc">Turn signals into a data-driven roadmap. Signal IQ scores features by customer impact, revenue weight, and signal frequency &mdash; so you ship what moves the needle.</p>
+        <button class="btn-link">See Roadmap &rarr;</button>
+      </div>
+      <div class="f-mock">
+        <div class="f-mock-bar"><div class="mock-bar-dot"></div><div class="mock-bar-dot"></div><div class="mock-bar-dot"></div></div>
+        <div class="f-mock-body">
+          <div class="prio-item" style="background:#f0fdf4; border-color:#bbf7d0;">
+            <div class="prio-badge p0">P0</div>
+            <div class="prio-body"><div class="prio-name">Bulk Export Optimization</div><div class="prio-meta">127 signals &middot; $2.4M ARR at risk</div></div>
+            <div class="prio-score hi">Score: 94</div>
+          </div>
+          <div class="prio-item" style="background:#fefce8; border-color:#fde68a;">
+            <div class="prio-badge p1">P1</div>
+            <div class="prio-body"><div class="prio-name">Role-Based Access Controls</div><div class="prio-meta">89 signals &middot; $1.8M ARR at risk</div></div>
+            <div class="prio-score mid">Score: 78</div>
+          </div>
+          <div class="prio-item">
+            <div class="prio-badge p2">P2</div>
+            <div class="prio-body"><div class="prio-name">Automated Digest Reports</div><div class="prio-meta">63 signals &middot; $900K ARR at risk</div></div>
+            <div class="prio-score lo">Score: 65</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTEGRATIONS -->
+  <section class="integrations" id="integrations">
+    <h2 class="reveal">Connect your stack</h2>
+    <p class="reveal" style="position:relative;">Zendesk, Intercom, Gong, Salesforce, and more &mdash; all feeding into one signal stream.</p>
+    <div class="int-grid reveal">
+      <div class="int-pill"><div class="int-dot" style="background:#0176d3;">SF</div>Salesforce</div>
+      <div class="int-pill"><div class="int-dot" style="background:#6c5ce7;">IC</div>Intercom</div>
+      <div class="int-pill"><div class="int-dot" style="background:#03363d;">ZD</div>Zendesk</div>
+      <div class="int-pill"><div class="int-dot" style="background:#e6573f;">GG</div>Gong</div>
+      <div class="int-pill"><div class="int-dot" style="background:#4a154b;">SL</div>Slack</div>
+      <div class="int-pill"><div class="int-dot" style="background:#5b5fc7;">TM</div>Teams</div>
+      <div class="int-pill"><div class="int-dot" style="background:#ff7a59;">HS</div>HubSpot</div>
+      <div class="int-pill"><div class="int-dot" style="background:#34a853;">GP</div>Google Play</div>
+      <div class="int-pill"><div class="int-dot" style="background:#007aff;">AS</div>App Store</div>
+      <div class="int-pill"><div class="int-dot" style="background:#ea4335;">EM</div>Email</div>
+      <div class="int-pill"><div class="int-dot" style="background:#8b5cf6;">WH</div>Webhooks</div>
+      <div class="int-pill"><div class="int-dot" style="background:#f59e0b;">AP</div>REST API</div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats reveal">
+    <h2>No more <span class="accent">guesswork</span>.</h2>
+    <div class="stats-grid">
+      <div class="stat-item"><div class="stat-number">10x</div><div class="stat-text">Faster feedback-to-insight</div></div>
+      <div class="stat-item"><div class="stat-number">85%</div><div class="stat-text">Fewer missed signals</div></div>
+      <div class="stat-item"><div class="stat-number">3.2x</div><div class="stat-text">More features from real data</div></div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta reveal">
+    <h2>Your roadmap deserves<br>more than <span class="accent">gut instinct</span></h2>
+    <p>Stop debating opinions. Start building what truly moves the needle.</p>
+    <button class="btn-hero primary">Book a demo</button>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="f-logo"><span class="dot" style="width:7px;height:7px;border-radius:50%;background:#6c5ce7;"></span><span class="brand-name" style="color:#fff;">Signal IQ</span></div>
+        <p>Because your roadmap deserves more than gut instinct.</p>
+      </div>
+      <div class="f-col"><h5>Platform</h5><a href="#">Signal Feed</a><a href="#">AI Themes</a><a href="#">Explore</a><a href="#">Prioritize</a></div>
+      <div class="f-col"><h5>Company</h5><a href="#">Pricing</a><a href="#">Careers</a><a href="#">About</a><a href="#">Blog</a></div>
+      <div class="f-col"><h5>Legal</h5><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Security</a></div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Signal IQ. All rights reserved.</span>
+      <div class="badges">
+        <span class="badge-pill">SOC 2</span>
+        <span class="badge-pill">GDPR</span>
+        <span class="badge-pill">HIPAA</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  </script>
+
+</body>
+</html>
